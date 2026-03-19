@@ -1,0 +1,35 @@
+name: Check Nindo Jobs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 7 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  check-nindo-jobs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check Nindo jobs and send mail
+        env:
+          NINDO_JOBS_EMAIL_FROM: ${{ secrets.NINDO_JOBS_EMAIL_FROM }}
+          NINDO_JOBS_EMAIL_TO: ${{ secrets.NINDO_JOBS_EMAIL_TO }}
+          NINDO_JOBS_SMTP_HOST: ${{ secrets.NINDO_JOBS_SMTP_HOST }}
+          NINDO_JOBS_SMTP_PASSWORD: ${{ secrets.NINDO_JOBS_SMTP_PASSWORD }}
+          NINDO_JOBS_SMTP_PORT: ${{ secrets.NINDO_JOBS_SMTP_PORT }}
+          NINDO_JOBS_SMTP_SECURITY: ${{ secrets.NINDO_JOBS_SMTP_SECURITY }}
+          NINDO_JOBS_SMTP_USERNAME: ${{ secrets.NINDO_JOBS_SMTP_USERNAME }}
+          NINDO_JOBS_SUBJECT_PREFIX: ${{ secrets.NINDO_JOBS_SUBJECT_PREFIX }}
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/check_nindo_jobs.py
